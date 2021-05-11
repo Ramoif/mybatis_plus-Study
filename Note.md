@@ -12,7 +12,7 @@
 
 1. 创建数据库（字符集**utf8**和排序规则**utf8_general_ci**）
 
-2. 创建User表给案例使用，这里直接使用快速开始中提供的表。ZZZZZZZZZZZZZZZZZZZZZ
+2. 创建User表给案例使用，这里直接使用快速开始中提供的表快速构建。
 
    [快速开始](https://mp.baomidou.com/guide/quick-start.html#%E5%88%9D%E5%A7%8B%E5%8C%96%E5%B7%A5%E7%A8%8B)
 
