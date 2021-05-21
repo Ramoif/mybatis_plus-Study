@@ -10,7 +10,7 @@
 
  引用自 - [Mybatis-Plus官网](https://mp.baomidou.com/)
 
-1. 创建数据库（字符集**utf8**和排序规则**utf8_general_ci**）
+1. 创建数据库（字符集**utf8**和排序规则**utf8_general_ci**），我这里在mybatis_plus目录下新建了user表。
 
 2. 创建User表给案例使用，这里直接使用快速开始中提供的表快速构建。
 
@@ -71,7 +71,7 @@
    </dependency>
    ```
 
-6. 在application.properties中添加数据库连接的配置。**注意url后面的参数**。
+6. 在resource目录下的**application.properties**文件中添加数据库连接的配置。**注意url后面的参数**。
 
    ```properties
    # mysql 5
