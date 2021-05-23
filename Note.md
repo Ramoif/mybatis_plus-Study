@@ -4,7 +4,48 @@
 
 本笔记大部分参考[尚硅谷](https://www.bilibili.com/video/av27212529)和[学相伴](https://www.kuangstudy.com/)的视频教程而来，仅供参考。
 
+为了构建方便，将**数据库操作的语句**整合在前面，下面过程不受影响：
 
+```sql
+create database mybatis_plus;
+use mybatis_plus;
+
+DROP TABLE IF EXISTS user;
+
+CREATE TABLE user
+(
+    id BIGINT(20) NOT NULL COMMENT '主键ID',
+    name VARCHAR(30) NULL DEFAULT NULL COMMENT '姓名',
+    age INT(11) NULL DEFAULT NULL COMMENT '年龄',
+    email VARCHAR(50) NULL DEFAULT NULL COMMENT '邮箱',
+    PRIMARY KEY (id)
+);
+
+DELETE FROM user;
+
+INSERT INTO user (id, name, age, email) VALUES
+(1, 'Jone', 18, 'test1@baomidou.com'),
+(2, 'Jack', 20, 'test2@baomidou.com'),
+(3, 'Tom', 28, 'test3@baomidou.com'),
+(4, 'Sandy', 21, 'test4@baomidou.com'),
+(5, 'Billie', 24, 'test5@baomidou.com');
+
+ALTER TABLE `user`
+    ADD COLUMN `create_time`  datetime NULL DEFAULT CURRENT_TIMESTAMP AFTER `email`,
+    ADD COLUMN `update_time`  datetime NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP AFTER `create_time`;
+
+ALTER TABLE `user`
+    MODIFY COLUMN `create_time`  datetime NULL DEFAULT NULL COMMENT '创建时间' AFTER `email`,
+    MODIFY COLUMN `update_time`  datetime NULL DEFAULT NULL COMMENT '修改时间' AFTER `create_time`,
+    ADD COLUMN `version`  int(10) NULL DEFAULT 1 COMMENT '乐观锁' AFTER `email`;
+
+ALTER TABLE `user`
+    ADD COLUMN `deleted`  int(1) NULL DEFAULT 0 COMMENT '逻辑删除' AFTER `version`;
+```
+
+
+
+***
 
 #### 开始创建项目
 
