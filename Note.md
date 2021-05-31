@@ -560,6 +560,9 @@ Sql语句如上。
 
 **逻辑删除**
 
+	* 物理删除：从数据库中直接移除。
+	* 逻辑删除：在数据库中没有被移除，通过一个变量deleted来让它失效。
+
 ​	相对于物理删除（直接删除）的直接从数据库中移除，他起到一个类似于回收站的作用，用于确保数据不会给误操作删除，管理员可以查看被删除的记录！
 
 ​	通过在数据库中添加字段`deleted`实现，下面是具体步骤：
@@ -578,22 +581,98 @@ ADD COLUMN `deleted`  int(1) NULL DEFAULT 0 COMMENT '逻辑删除' AFTER `versio
 private Integer deleted;
 ```
 
-3. 注册逻辑删除组件
+3. 在config类中注册逻辑删除组件。（3.0.5版本，3.3.0版本之后无需，注意参考官网）
+
+```java
+//注册逻辑删除
+@Bean
+public ISqlInjector sqlInjector(){
+    return new LogicSqlInjector();
+}
+```
+
+4. 在资源类中配置默认值
+
+```properties
+# 配置逻辑删除
+mybatis-plus.global-config.db-config.logic-delete-value=1
+mybatis-plus.global-config.db-config.logic-not-delete-value=0
+```
+
+5. 测试删除
+
+使用之前测试类中的删除操作的例子，可以看到运行结果： 
+
+```text
+==>  Preparing: UPDATE user SET deleted=1 WHERE id=? AND deleted=0 
+==> Parameters: 5(Long)
+<==    Updates: 1
+```
+
+可以看到执行的并不是**删除**操作而是**更新**操作，记录依旧在数据库中了，（被删除的deleted字段数值为1）。
+
+这次执行查询操作来看看结果：
+
+```text
+==>  Preparing: SELECT id,name,age,email,version,deleted,create_time,update_time FROM user WHERE deleted=0 
+```
+
+可以看到他自动拼接了`where deleted = 0`这个字段。
 
 
 
+***
 
+#### 性能分析 - 解决慢sql
 
+有些慢sql，需要在超过运行时间的时候停止sql语句。
 
+**性能分析插件**（3.0.5版本）
 
+```java
+//SQL执行效率插件
+@Bean
+@Profile({"dev","test"})//设置只有test测试环境，dev开发环境下才会开启。
+public PerformanceInterceptor performanceInterceptor(){
+    PerformanceInterceptor performanceInterceptor = new PerformanceInterceptor();
+    performanceInterceptor.setMaxTime(1);   //设置最大sql时间
+    performanceInterceptor.setFormat(true); //显示格式化
+    return performanceInterceptor;
+}
+```
 
+```pro
+# 设置开发环境
+spring.profiles.active=dev
+```
 
+设置最大sql时间的单位是ms，可以看到上面设置的是1ms。我们执行查询全部：
 
+```text
+ Time：26 ms - ID：com.ycsx.mapper.UserMapper.selectList
+Execute SQL：
+    SELECT
+        id,
+        name,
+        age,
+        email,
+        version,
+        deleted,
+        create_time,
+        update_time 
+    FROM
+        user 
+    WHERE
+        deleted=0
+```
 
-
-
-
-
-
+这是格式化显示的结果，可以看到我们的执行时间在最前面标明是26ms。于是下面报红/报错了，我们可以根据需要调整成1000ms（1秒）。
 
   
+
+***
+
+#### 条件构造器 Wrapper
+
+
+

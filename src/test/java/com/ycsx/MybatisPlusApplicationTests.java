@@ -89,4 +89,10 @@ class MybatisPlusApplicationTests {
         System.out.println(page.getTotal()); //Total
     }
 
+    //测试删除
+    @Test
+    void test07(){
+        userMapper.deleteById(5L);
+    }
+
 }
