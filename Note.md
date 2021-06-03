@@ -1,4 +1,4 @@
-## Mybatis-Plus 快速开始
+# Mybatis-Plus 快速开始
 
 #### 写在前面
 
@@ -674,5 +674,242 @@ Execute SQL：
 
 #### 条件构造器 Wrapper
 
+复杂的sql需要用到wrapper。
 
+首先我们在test包下新建一个WrapperTest类来进行相关的使用测试：
+
+```java
+@SpringBootTest
+public class WrapperTest {
+    @Autowired
+    private UserMapper userMapper;
+    //以上从MybatisPlusApplicationTests复制即可
+}
+```
+
+以下是举例：
+
+
+
+**条件查询**
+
+```java
+//查询name不为空，邮箱不为空，年龄>12
+@Test
+void wrapperTest01(){
+    QueryWrapper<User> wrapper = new QueryWrapper<>();
+    //可使用链式编程
+    wrapper.isNotNull("name")
+            .isNotNull("email")
+            .ge("age",12);
+    userMapper.selectList(wrapper).forEach(System.out::println);
+}
+```
+
+其中`isNotNull`和`ge`方法是**非空**和**大于等于**判断条件。
+
+控制台输出的部分信息：
+
+```text
+ Time：29 ms - ID：com.ycsx.mapper.UserMapper.selectList
+Execute SQL：
+    SELECT
+        id,
+        name,
+        age,
+        email,
+        version,
+        deleted,
+        create_time,
+        update_time 
+    FROM
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@18907af2]
+        user 
+    WHERE
+        deleted=0 
+        AND name IS NOT NULL 
+        AND email IS NOT NULL 
+        AND age >= 12
+```
+
+可以看到在sql语句后拼接上了where语句选择条件。
+
+
+
+**单一查询**
+
+```java
+//查询名字=XXX的用户（单一）
+@Test
+void test02(){
+    QueryWrapper<User> wrapper = new QueryWrapper<>();
+    wrapper.eq("name","Tom");
+    User user = userMapper.selectOne(wrapper);
+    System.out.println(user);
+}
+```
+
+eq = equal，相等条件。
+
+selectOne()，查询单一用户，如果要查询多个使用selectList方法。
+
+控制台结果：
+
+```text
+(...)
+	FROM
+        user 
+    WHERE
+        deleted=0 
+        AND name = 'Tom'
+User(id=3, name=Tom, age=5, email=...
+```
+
+可以看到拼接了name=‘Tom’的条件。
+
+
+
+**查询范围**
+
+```java
+//查询年龄范围在20~30
+@Test
+void test03(){
+    QueryWrapper<User> wrapper = new QueryWrapper<>();
+    wrapper.between("age",20,30); //区间
+    Integer count = userMapper.selectCount(wrapper); //结果数
+    System.out.println(count);
+}
+```
+
+between，查询区间。
+
+selectCount()，查询结果数。
+
+控制台结果：
+
+```text
+Execute SQL：
+    SELECT
+        COUNT(1) 
+    FROM
+        user 
+    WHERE
+        deleted=0 
+        AND age BETWEEN 20 AND 30
+```
+
+
+
+**模糊查询**
+
+```java
+//模糊查询，名字中不包含e，邮箱首字母是t
+@Test
+void test04(){
+    QueryWrapper<User> wrapper = new QueryWrapper<>();
+    wrapper.notLike("name","e")
+            .likeRight("email","t");
+    List<Map<String, Object>> maps = userMapper.selectMaps(wrapper);
+    maps.forEach(System.out::println);
+}
+```
+
+notLike，不包含xxx，等同于`not like '%(xxx)%'`；
+
+likeRight，左Like，等同于`like 'xxx%'`。
+
+selectMaps()，(某评论言：名字是Map，本质是List，自行甄别...)
+
+控制台部分结果：
+
+```text
+...
+FROM
+    user 
+WHERE
+    deleted=0 
+    AND name NOT LIKE '%e
+    AND email LIKE 't%'
+...
+```
+
+
+
+**连接查询（内查询）**
+
+一个sql里嵌一个sql：
+
+```java
+//连接查询（内查询）
+@Test
+void test05() {
+    QueryWrapper<User> wrapper = new QueryWrapper<>();
+    // id 在子查询中查询出来，查询自行拼接条件。（id<3）
+    wrapper.inSql("id","select id from user where id<3");
+    List<Object> obj = userMapper.selectObjs(wrapper);
+    obj.forEach(System.out::println);
+}
+```
+
+控制台输出sql语句：
+
+```text
+Execute SQL：
+    SELECT
+        id,
+        name,
+        age,
+        email,
+        version,
+        deleted,
+        create_time,
+        update_time 
+    FROM
+        user 
+    WHERE
+        deleted=0 
+        AND id IN (
+            select
+                id 
+            from
+                user
+            where
+                id<3
+        )
+```
+
+可以看到使用inSql方法他在后面拼接了AND in ...语句内查询。
+
+
+
+**排序**
+
+```java
+//根据id排序，Asc升序，Desc降序
+@Test
+void test06(){
+    QueryWrapper<User> wrapper = new QueryWrapper<>();
+    wrapper.orderByDesc("id");
+    userMapper.selectList(wrapper).forEach(System.out::println);
+}
+```
+
+
+
+还有更多的Wrapper用法，可以查看官方文档。
+
+[Mybatis-Plus官网](https://mp.baomidou.com/)
+
+
+
+***
+
+#### 代码生成器
+
+[Mybatis-Plus：代码生成器](https://mp.baomidou.com/guide/generator.html#%E4%BD%BF%E7%94%A8%E6%95%99%E7%A8%8B)
+
+
+
+至此，Mybatis_Plus基本功能完成！
 
