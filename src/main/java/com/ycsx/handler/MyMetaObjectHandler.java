@@ -13,13 +13,13 @@ public class MyMetaObjectHandler implements MetaObjectHandler {
     @Override   //插入填充策略
     public void insertFill(MetaObject metaObject) {
         log.info("执行插入操作......");
-        this.setFieldValByName("createTime",new Date(),metaObject);
-        this.setFieldValByName("updateTime",new Date(),metaObject);
+        this.setFieldValByName("createTime", new Date(), metaObject);
+        this.setFieldValByName("updateTime", new Date(), metaObject);
     }
 
     @Override   //更新填充策略
     public void updateFill(MetaObject metaObject) {
         log.info("执行更新操作......");
-        this.setFieldValByName("updateTime",new Date(),metaObject);
+        this.setFieldValByName("updateTime", new Date(), metaObject);
     }
 }

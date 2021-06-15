@@ -138,10 +138,36 @@ ALTER TABLE `user`
      }
      ```
 
+   - 完整的pojo实体类举例：
+
+     ```java
+     @Data
+     @AllArgsConstructor
+     @NoArgsConstructor
+     public class User {
+         @TableId(type = IdType.AUTO)
+         private Long id;
+         private String name;
+         private Integer age;
+         private String email;
      
-
-   - mapper接口继承基础类**BaseMapper<T>**，简化了大量查询的代码。
-
+         @Version
+         private Integer version;
+     
+         @TableLogic
+         private Integer deleted;
+     
+         @TableField(fill = FieldFill.INSERT)
+         private Date createTime;
+         @TableField(fill = FieldFill.INSERT_UPDATE)
+         private Date updateTime;
+     }
+     ```
+   
+     
+   
+   - 创建一个mapper接口，然后继承基础类**BaseMapper<T>**，他代替了实体类，简化了大量查询的代码。
+   
      ```java
      //注解@代表持久层Dao，注意在Main中添加@MapperScan
      @Repository
@@ -149,11 +175,18 @@ ALTER TABLE `user`
          //直接继承基本类BaseMapper<T>，并且自动完成所有的CRUD编写。
      }
      ```
-
+   
+   - 在**主启动类**中添加**包扫描**注解！
+   
+     ```java
+     @MapperScan("com.ycsx.mapper")
+     //不然会报错Positive matches:...
+     ```
+   
      
-
+   
    - 直接在测试类中测试！这里演示查询全部：
-
+   
      ```java
      @SpringBootTest
      class MybatisPlusApplicationTests {
@@ -168,9 +201,9 @@ ALTER TABLE `user`
          }
      }
      ```
-
+   
      查询结果（控制台），成功：
-
+   
      ```text
      User(id=1, name=Jone, age=18, email=test1@baomidou.com)
      User(id=2, name=Jack, age=20, email=test2@baomidou.com)

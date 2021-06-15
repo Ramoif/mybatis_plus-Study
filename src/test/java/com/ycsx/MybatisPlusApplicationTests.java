@@ -48,7 +48,7 @@ class MybatisPlusApplicationTests {
 
     //测试乐观锁在并发情况下失败的情况
     @Test
-    void test3(){
+    void test3() {
         User user = userMapper.selectById(2L);
         user.setName("2号乐观锁更新111");
         user.setEmail("test11111@test.com");
@@ -63,35 +63,35 @@ class MybatisPlusApplicationTests {
 
     //批量查询
     @Test
-    void test4(){
+    void test4() {
         List<User> users = userMapper.selectBatchIds(Arrays.asList(1, 2, 3));
         users.forEach(System.out::println);
     }
 
     //条件查询
     @Test
-    void test5(){
+    void test5() {
         //自定义条件
         HashMap<String, Object> map = new HashMap<>();
-        map.put("name","Tom");
-        map.put("age",28);
+        map.put("name", "Tom");
+        map.put("age", 28);
         List<User> users = userMapper.selectByMap(map);
         users.forEach(System.out::println);
     }
 
     //分页查询
     @Test
-    void test6(){
+    void test6() {
         //参数为(当前页*1开始, 页面大小)
-        Page<User> page = new Page<>(1,5);
-        userMapper.selectPage(page,null);
+        Page<User> page = new Page<>(1, 5);
+        userMapper.selectPage(page, null);
         page.getRecords().forEach(System.out::println);
         System.out.println(page.getTotal()); //Total
     }
 
     //测试删除
     @Test
-    void test07(){
+    void test07() {
         userMapper.deleteById(5L);
     }
 

@@ -17,23 +17,26 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 public class MybatisPlusConfig {
     //注册乐观锁插件
     @Bean
-    public OptimisticLockerInterceptor optimisticLockerInterceptor(){
+    public OptimisticLockerInterceptor optimisticLockerInterceptor() {
         return new OptimisticLockerInterceptor();
     }
+
     //注册分页插件
     @Bean
-    public PaginationInterceptor paginationInterceptor(){
+    public PaginationInterceptor paginationInterceptor() {
         return new PaginationInterceptor();
     }
+
     //注册逻辑删除
     @Bean
-    public ISqlInjector sqlInjector(){
+    public ISqlInjector sqlInjector() {
         return new LogicSqlInjector();
     }
+
     //SQL执行效率插件
     @Bean
-    @Profile({"dev","test"})//设置只有test测试环境，dev开发环境下才会开启。
-    public PerformanceInterceptor performanceInterceptor(){
+    @Profile({"dev", "test"})//设置只有test测试环境，dev开发环境下才会开启。
+    public PerformanceInterceptor performanceInterceptor() {
         PerformanceInterceptor performanceInterceptor = new PerformanceInterceptor();
         performanceInterceptor.setMaxTime(1000);   //设置最大sql时间
         performanceInterceptor.setFormat(true); //显示格式化
