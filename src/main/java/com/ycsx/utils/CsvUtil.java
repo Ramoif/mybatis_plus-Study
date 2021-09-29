@@ -1,13 +1,13 @@
 package com.ycsx.utils;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
+import java.io.*;
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.List;
 
 public class CsvUtil {
+
+    /* 输出scv*/
     public static <T> String exportCsv(String[] titles, String[] propertys, List<T> list) throws IOException, IllegalArgumentException, IllegalAccessException{
         File file = new File("d:\\test.csv");
         //构建输出流，同时指定编码
@@ -41,5 +41,33 @@ public class CsvUtil {
         ow.flush();
         ow.close();
         return "0";
+    }
+
+    public static ArrayList<String> readCsv(String filepath) {
+        File csv = new File(filepath); // CSV文件路径
+        csv.setReadable(true);//设置可读
+        csv.setWritable(true);//设置可写
+        BufferedReader br = null;
+        try {
+            br = new BufferedReader(new FileReader(csv));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        String line = "";
+        String everyLine = "";
+        ArrayList<String> allString = new ArrayList<>();
+        try {
+            while ((line = br.readLine()) != null) // 读取到的内容给line变量
+            {
+                everyLine = line;
+                //输出每一行
+                //System.out.println(everyLine);
+                allString.add(everyLine);
+            }
+            System.out.println("csv表格中所有行数：" + allString.size());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return allString;
     }
 }

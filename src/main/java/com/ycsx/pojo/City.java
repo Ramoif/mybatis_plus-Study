@@ -12,7 +12,7 @@ import java.util.Date;
 @NoArgsConstructor
 public class City {
     //若数据库中字段前有_下划线，则后一个字母大写
-    @TableId(type = IdType.AUTO)
+
     private Long rowNo;
 
     private String prov;
@@ -20,5 +20,5 @@ public class City {
     private String tele;
     private String post;
 
-    private Date currentTime;
+    private Date curTime;
 }
